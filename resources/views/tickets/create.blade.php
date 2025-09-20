@@ -30,25 +30,57 @@
         .top-bar .contact-info span {
             margin-right: 1.5rem;
         }
-        .top-bar .social-icons a {
-            font-size: 1.2rem;
-        }
         .navbar {
             position: fixed;
-            top: 40px;
+            top: 40px; /* push below top-bar */
             left: 0;
             width: 100%;
             z-index: 1020;
             background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
         }
         .navbar-brand img {
             max-height: 80px;
+            margin: 0 10px;
         }
         .card {
             border: 1px solid #dee2e6;
         }
         body {
-            padding-top: 180px;
+            padding-top: 200px; /* space for top-bar + navbar */
+        }
+        footer {
+            background-color: #212529;
+            color: #fff;
+            padding: 1rem 0;
+            margin-top: 50px;
+            text-align: center;
+        }
+        footer a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #adb5bd;
+        }
+        /* Same width for Create Ticket & Ticket Details */
+        .ticket-card,
+        .event-details-card {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        /* Same width for Event Logo & Ticket Logo */
+        .eventlogo, .ticketlogo {
+            width: 100%;
+            max-width: 600px; 
+            height: auto;
         }
     </style>
 </head>
@@ -58,46 +90,50 @@
     <div class="container d-flex justify-content-between align-items-center">
         <div class="contact-info">
             <span>
-                <i class="fas fa-envelope me-2"></i><a href="mailto:comsci.eng@usls.edu.ph">comsci.eng@usls.edu.ph</a>
+                <i class="fas fa-envelope me-2"></i>
+                <a href="mailto:comsci.eng@usls.edu.ph">comsci.eng@usls.edu.ph</a>
             </span>
             <span>
-                <i class="fas fa-phone me-2"></i><a href="tel:09677636730">09677636730</a>
+                <i class="fas fa-phone me-2"></i>
+                <a href="tel:09677636730">09677636730</a>
             </span>
         </div>
-        <div class="social-icons">
-            <a href="https://www.facebook.com/CompSciSocUSLS" target="_blank" aria-label="Facebook">
-                <i class="fab fa-facebook-f"></i>
-            </a>
+        <div class="d-flex align-items-center">
+            <div class="social-icons me-3">
+                <a href="https://www.facebook.com/CompSciSocUSLS" target="_blank" aria-label="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+            </div>
+            <!-- Logout button -->
+            <form action="{{ route('admin.logout') }}" method="POST" class="mb-0">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
+            </form>
         </div>
     </div>
 </header>
 
-<nav class="navbar navbar-light">
-    <div class="container d-flex justify-content-center align-items-center">
+<nav class="navbar navbar-light bg-white fixed-top shadow-sm" style="top: 40px;">
+    <div class="container d-flex justify-content-center">
         <a class="navbar-brand" href="#">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="max-height: 80px;">
         </a>
-
-        {{-- ✅ Logout Button --}}
-        <form action="{{ route('admin.logout') }}" method="POST" class="position-absolute end-0 me-3">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </form>
     </div>
 </nav>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card">
+<div class="container">
+    <div class="row align-items-start">
+        <div class="col-lg-6 text-center">
+            <img src="{{ asset('images/eventlogo.jpg') }}" alt="Event Logo" class="img-fluid mb-3 eventlogo">
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm ticket-card">
                 <div class="card-header bg-white text-dark">
-                    <h3 class="mb-0">Create a Ticket</h3>
+                    <h3 class="mb-0"> Ticket</h3>
                 </div>
                 <div class="card-body">
-
-                    {{-- ✅ Success Message --}}
+                    {{-- Success Message --}}
                     @if(session('success'))
                         <div class="alert alert-success d-flex justify-content-between align-items-center">
                             <span>{{ session('success') }}</span>
@@ -124,13 +160,6 @@
                     <form action="{{ route('tickets.store') }}" method="POST">
                         @csrf
 
-                        {{-- Event Info --}}
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">Event</label>
-                            <h4 class="form-control-plaintext fw-bold">RIFTWALKERS</h4>
-                            <input type="hidden" name="event_name" value="RIFTWALKERS">
-                        </div>
-
                         {{-- Customer Info --}}
                         <h5 class="mb-3 text-secondary">Customer Information</h5>
                         <div class="row g-3 mb-4">
@@ -152,54 +181,62 @@
                             </div>
                         </div>
 
-                        {{-- Ticket Details --}}
-                        <h5 class="mb-3 text-secondary">Ticket Details</h5>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" class="form-control" id="quantity" name="quantity" value="{{ old('quantity', 1) }}" min="1" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-select" id="status" name="status" required>
-                                    <option value="pending" @selected(old('status') == 'pending')>Pending</option>
-                                    <option value="paid" @selected(old('status', 'paid') == 'paid')>Paid</option>
-                                    <option value="cancelled" @selected(old('status') == 'cancelled')>Cancelled</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="price" class="form-label">Price (optional)</label>
-                                <input 
-                                    type="number" 
-                                    class="form-control" 
-                                    id="price" 
-                                    name="price" 
-                                    value="{{ old('price', 30) }}">
-                            </div>
-                        </div>
-
-                        {{-- Optional Info --}}
-                        <h5 class="mb-3 text-secondary">Optional Information</h5>
-                        <div class="row g-3 mb-4">
-                            <input type="hidden" id="venue" name="venue" value="Cody 11">
-                            <input type="hidden" id="date" name="date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
-                            <input type="hidden" id="time" name="time" value="{{ \Carbon\Carbon::now()->format('H:i') }}">
-                            <div class="col-md-6">
-                                <label for="university" class="form-label">University</label>
-                                <input type="text" class="form-control" id="university" name="university" value="{{ old('university') }}">
-                            </div>
-                        </div>
+                        {{-- Hidden Event Info --}}
+                        <input type="hidden" name="event_name" value="RIFTWALKERS">
+                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="status" value="paid">
+                        <input type="hidden" name="price" value="30">
+                        <input type="hidden" name="venue" value="Cody 11">
+                        <input type="hidden" name="date" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
+                        <input type="hidden" name="time" value="{{ \Carbon\Carbon::now()->format('H:i') }}">
+                        <input type="hidden" name="university" value="">
 
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-dark">Create Ticket</button>
                         </div>
                     </form>
-
                 </div>
+            </div>
+
+            <div class="event-details-card card shadow-sm p-4 mt-2">
+                <div class="row">
+                    <div class="col-6">
+                        <h5 class="mb-1 fw-bold">Ticket Price</h5>
+                        <p class="mb-0">₱30</p>
+                    </div>
+                    <div class="col-6">
+                        <h5 class="mb-1 fw-bold">Venue Details</h5>
+                        <p class="text-uppercase mb-0 fw-bold">Venue</p>
+                        <p class="mb-0">Cody 24 2nd floor</p>
+                        <p class="mb-0">
+                            <a href="#" class="text-primary">University of Saint La Salle</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="row mt-0">
+                    <div class="col-12">
+                        <h5 class="mb-1 fw-bold">Date and Time</h5>
+                        <p class="mb-0">Sept 22 - 26 @8am - 5pm</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket logo moved here -->
+            <div class="mt-3">
+                <img src="{{ asset('images/ticketlogo.jpg') }}" alt="Ticket Logo" class="img-fluid ticketlogo">
             </div>
         </div>
     </div>
 </div>
 
+<footer style="background-color: #000000; color: #ffffff; padding: 20px 0; text-align: center;">
+    <div class="container">
+        <p class="mb-1">&copy; 2025 Computer Science Society - USLS. All Rights Reserved.</p>
+        <p class="mb-0">
+            <a href="mailto:comsci.eng@usls.edu.ph" style="color: #ffffff; text-decoration: none;">comsci.eng@usls.edu.ph</a> | 
+            <a href="https://www.facebook.com/CompSciSocUSLS" target="_blank" style="color: #ffffff; text-decoration: none;">Facebook</a>
+        </p>
+    </div>
+</footer>
 </body>
 </html>
