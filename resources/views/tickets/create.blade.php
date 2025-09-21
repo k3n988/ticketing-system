@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
+        /* Top Bar */
         .top-bar {
             background-color: #212529;
             padding: 0.5rem 0;
@@ -22,6 +23,8 @@
         .top-bar a { color: #ffffff; text-decoration: none; transition: color 0.2s; }
         .top-bar a:hover { color: #adb5bd; }
         .top-bar .contact-info span { margin-right: 1.5rem; }
+
+        /* Navbar */
         .navbar {
             position: fixed;
             top: 40px;
@@ -33,25 +36,67 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.5rem 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
-        .navbar-brand { display: flex; align-items: center; }
         .navbar-brand img { max-height: 80px; margin: 0 10px; }
-        .card { border: 1px solid #dee2e6; }
-        body { padding-top: 200px; }
-        footer {
-            background-color: #212529;
-            color: #fff;
-            padding: 1rem 0;
-            margin-top: 50px;
-            text-align: center;
+
+        /* Body */
+        body { padding-top: 200px; background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+
+        /* Cards */
+        .ticket-card, .event-details-card {
+            max-width: 600px; 
+            margin: 0 auto 1.5rem auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+            transition: transform 0.2s;
         }
-        footer a { color: #ffffff; text-decoration: none; }
-        footer a:hover { color: #adb5bd; }
-        .ticket-card, .event-details-card { max-width: 600px; margin: 0 auto; }
-        .eventlogo, .ticketlogo { width: 100%; max-width: 600px; height: auto; }
+        .ticket-card:hover, .event-details-card:hover {
+            transform: translateY(-3px);
+        }
+        .card-header {
+            border-bottom: none;
+            background-color: #ffffff;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #212529;
+        }
+        .card-body input.form-control {
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            transition: all 0.2s;
+        }
+        .card-body input.form-control:focus {
+            border-color: #3a3d98;
+            box-shadow: 0 0 0 0.2rem rgba(58,61,152,.15);
+        }
+        .btn-dark {
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            transition: all 0.2s;
+        }
+        .btn-dark:hover {
+            background-color: #3a3d98;
+        }
+
+        /* Images */
+        .eventlogo, .ticketlogo { width: 100%; border-radius: 12px; margin-bottom: 15px; }
+
+        /* Footer */
+        footer {
+            background-color: #ffffff; 
+            color: #212529; 
+            padding: 20px 0; 
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+        }
+        footer a { color: #212529; text-decoration: none; transition: color 0.2s; }
+        footer a:hover { color: #3a3d98; }
     </style>
 </head>
-<body class="bg-white">
+<body>
 
 <header class="top-bar">
     <div class="container d-flex justify-content-between align-items-center">
@@ -65,7 +110,7 @@
                     <i class="fab fa-facebook-f"></i>
                 </a>
             </div>
-            <a href="{{ route('admin.login') }}" class="btn btn-sm btn-outline-light">Login</a>
+            <a href="{{ route('admin.login') }}" class="btn btn-sm btn-outline-dark">Login</a>
         </div>
     </div>
 </header>
@@ -73,7 +118,7 @@
 <nav class="navbar navbar-light bg-white fixed-top shadow-sm" style="top: 40px;">
     <div class="container d-flex justify-content-center">
         <a class="navbar-brand" href="#">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo" style="max-height: 80px;">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo">
         </a>
     </div>
 </nav>
@@ -81,21 +126,17 @@
 <div class="container">
     <div class="row align-items-start">
         <div class="col-lg-6 text-center">
-            <img src="{{ asset('images/eventlogo.jpg') }}" alt="Event Logo" class="img-fluid mb-3 eventlogo">
+            <img src="{{ asset('images/eventlogo.jpg') }}" alt="Event Logo" class="img-fluid eventlogo">
         </div>
 
         <div class="col-lg-5">
-            <div class="card shadow-sm ticket-card">
-                <div class="card-header bg-white text-dark">
-                    <h3 class="mb-0">Order Ticket</h3>
-                </div>
+            <div class="card ticket-card">
+                <div class="card-header text-center">Order Ticket</div>
                 <div class="card-body">
 
                     {{-- Success Message --}}
                     @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
+                        <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
                     {{-- Validation Errors --}}
@@ -112,7 +153,6 @@
 
                     <form action="{{ route('tickets.store') }}" method="POST">
                         @csrf
-
                         <h5 class="mb-3 text-secondary">Customer Information</h5>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
@@ -133,10 +173,8 @@
                             </div>
                         </div>
 
-                        {{-- Hidden Order Number --}}
+                        {{-- Hidden Fields --}}
                         <input type="hidden" name="order_number" value="{{ old('order_number', \Str::uuid()) }}">
-
-                        {{-- Hidden Event Info --}}
                         <input type="hidden" name="event_name" value="RIFTWALKERS">
                         <input type="hidden" name="quantity" value="1">
                         <input type="hidden" name="status" value="pending">
@@ -150,46 +188,43 @@
                             <button type="submit" class="btn btn-dark">Submit</button>
                         </div>
                     </form>
-
                 </div>
             </div>
 
-            <div class="event-details-card card shadow-sm p-4 mt-2">
-                <div class="row">
+            <div class="card event-details-card p-4">
+                <div class="row mb-3">
                     <div class="col-6">
-                        <h5 class="mb-1 fw-bold">Ticket Price</h5>
+                        <h5 class="fw-bold mb-1">Ticket Price</h5>
                         <p class="mb-0">₱30</p>
                     </div>
                     <div class="col-6">
-                        <h5 class="mb-1 fw-bold">Venue Details</h5>
+                        <h5 class="fw-bold mb-1">Venue Details</h5>
                         <p class="text-uppercase mb-0 fw-bold">Venue</p>
                         <p class="mb-0">Cody 24 2nd floor</p>
-                        <p class="mb-0">
-                            <a href="#" class="text-primary">University of Saint La Salle</a>
-                        </p>
+                        <p class="mb-0"><a href="#" class="text-primary">University of Saint La Salle</a></p>
                     </div>
                 </div>
-                <div class="row mt-0">
+                <div class="row">
                     <div class="col-12">
-                        <h5 class="mb-1 fw-bold">Date and Time</h5>
+                        <h5 class="fw-bold mb-1">Date and Time</h5>
                         <p class="mb-0">Sept 22 - 26 @8am - 5pm</p>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-3">
+            <div class="mt-3 text-center">
                 <img src="{{ asset('images/ticketlogo.jpg') }}" alt="Ticket Logo" class="img-fluid ticketlogo">
             </div>
         </div>
     </div>
 </div>
 
-<<footer style="background-color: #ffffff; color: #212529; padding: 20px 0; text-align: center;">
+<footer>
     <div class="container">
         <p class="mb-1">&copy; 2025 Computer Science Society - USLS. All Rights Reserved.</p>
         <p class="mb-0">
-            <a href="mailto:comsci.eng@usls.edu.ph" style="color: #212529; text-decoration: none;">comsci.eng@usls.edu.ph</a> | 
-            <a href="https://www.facebook.com/CompSciSocUSLS" target="_blank" style="color: #212529; text-decoration: none;">Facebook</a>
+            <a href="mailto:comsci.eng@usls.edu.ph">comsci.eng@usls.edu.ph</a> | 
+            <a href="https://www.facebook.com/CompSciSocUSLS" target="_blank">Facebook</a>
         </p>
     </div>
 </footer>

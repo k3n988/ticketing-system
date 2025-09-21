@@ -1,4 +1,4 @@
-logi
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,58 +96,59 @@ logi
     </nav>
 
     {{-- Login Card --}}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card shadow login-card">
-                    <div class="card-header text-center">
-                        <h4>Admin Login</h4>
-                    </div>
-                    <div class="card-body">
+    <!-- Login Card -->
+<!-- Login Card -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="login-card card shadow-sm" style="border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                <div class="card-header text-center" style="background-color: transparent; border-bottom: none;">
+                    <h4 style="color: #000000; font-weight: 700;">Admin Login</h4>
+                </div>
+                <div class="card-body">
 
-                        {{-- Error Message --}}
-                        @if ($errors->any())
-                            <div class="alert alert-danger">{{ $errors->first() }}</div>
-                        @endif
+                    {{-- Error Message --}}
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="border-radius: 10px;">{{ $errors->first() }}</div>
+                    @endif
 
-                        {{-- Success Message --}}
-                        @if (session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
+                    {{-- Success Message --}}
+                    @if (session('success'))
+                        <div class="alert alert-success" style="border-radius: 10px;">{{ session('success') }}</div>
+                    @endif
 
-                        <form action="{{ route('admin.login.submit') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input 
-                                    type="email" 
-                                    name="email" 
-                                    class="form-control" 
-                                    placeholder="Enter admin email" 
-                                    required 
-                                    autofocus
-                                >
-                            </div>
+                    <form action="{{ route('admin.login.submit') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                class="form-control" 
+                                placeholder="Enter admin email" 
+                                required 
+                                autofocus
+                                style="border-radius: 10px; padding: 0.75rem 1rem;"
+                            >
+                        </div>
 
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input 
-                                    type="password" 
-                                    name="password" 
-                                    class="form-control" 
-                                    placeholder="Enter password" 
-                                    required
-                                >
-                            </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input 
+                                type="password" 
+                                name="password" 
+                                class="form-control" 
+                                placeholder="Enter password" 
+                                required
+                                style="border-radius: 10px; padding: 0.75rem 1rem;"
+                            >
+                        </div>
 
-                            <button type="submit" class="btn btn-dark w-100">Login</button>
-                        </form>
+                        <button type="submit" class="btn btn-dark w-100" style="border-radius: 10px; padding: 0.75rem;">Login</button>
+                    </form>
 
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-</body>
-</html>
+</div>
