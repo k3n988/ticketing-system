@@ -2,14 +2,20 @@
 # PHP extensions required for your Laravel app
 extensions = ["gd", "mbstring", "pdo_pgsql", "openssl", "tokenizer", "ctype", "json", "fileinfo", "bcmath", "xml"]
 
-# Optional: PHP version (matches Railway's default if not set)
+# PHP version
 version = "8.4"
 
-# Optional: Composer install args
-install = "composer install --optimize-autoloader --no-interaction"
+# Composer install with platform requirements enforced
+install = "composer install --optimize-autoloader --no-interaction --no-scripts"
 
-# Optional: Build commands before starting app
-build = "php artisan config:cache && php artisan route:cache && php artisan view:cache"
+# Optional: run artisan commands before starting the app
+build = """
+php artisan key:generate
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+"""
 
 # Start command for Laravel
 start = "php artisan serve --host=0.0.0.0 --port=${PORT}"
