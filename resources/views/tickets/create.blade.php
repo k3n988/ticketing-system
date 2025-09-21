@@ -104,11 +104,8 @@
                     <i class="fab fa-facebook-f"></i>
                 </a>
             </div>
-            <!-- Logout button -->
-            <form action="{{ route('admin.logout') }}" method="POST" class="mb-0">
-                @csrf
-                <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
-            </form>
+            <!-- Login button instead of Logout -->
+            <a href="{{ route('admin.login') }}" class="btn btn-sm btn-outline-light">Login</a>
         </div>
     </div>
 </header>
@@ -130,7 +127,7 @@
         <div class="col-lg-5">
             <div class="card shadow-sm ticket-card">
                 <div class="card-header bg-white text-dark">
-                    <h3 class="mb-0"> Ticket</h3>
+                    <h3 class="mb-0">Ticket</h3>
                 </div>
                 <div class="card-body">
                     {{-- Success Message --}}
@@ -192,7 +189,7 @@
                         <input type="hidden" name="university" value="">
 
                         <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-dark">Create Ticket</button>
+                            <button type="submit" class="btn btn-dark">Submit </button>
                         </div>
                     </form>
                 </div>
@@ -221,7 +218,7 @@
                 </div>
             </div>
 
-            <!-- Ticket logo moved here -->
+            <!-- Ticket logo -->
             <div class="mt-3">
                 <img src="{{ asset('images/ticketlogo.jpg') }}" alt="Ticket Logo" class="img-fluid ticketlogo">
             </div>

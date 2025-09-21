@@ -16,7 +16,7 @@ const ADMIN_PASSWORD = "12345678";
 
 // Show login form
 Route::get('/admin/login', function () {
-    return view('tickets.admin.login'); // ✅ must exist at resources/views/tickets/admin/login.blade.php
+    return view('tickets.admin.login'); 
 })->name('admin.login');
 
 // Handle login
@@ -26,7 +26,7 @@ Route::post('/admin/login', function (Request $request) {
 
     if ($email === ADMIN_EMAIL && $password === ADMIN_PASSWORD) {
         session(['admin_logged_in' => true]);
-        return redirect()->route('tickets.create')->with('success', 'Welcome Admin!');
+        return redirect()->route('admin.dashboard')->with('success', 'Welcome Admin!');
     }
 
     return back()->withErrors([
@@ -42,7 +42,21 @@ Route::post('/admin/logout', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Protected Routes (manual session check on each route)
+| Admin Dashboard
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/admin/dashboard', function () {
+    if (!session('admin_logged_in')) {
+        return redirect()->route('admin.login');
+    }
+    $tickets = Ticket::all();
+    return view('tickets.admin.dashboard', compact('tickets'));
+})->name('admin.dashboard');
+
+/*
+|--------------------------------------------------------------------------
+| Protected Routes (Ticket CRUD)
 |--------------------------------------------------------------------------
 */
 
