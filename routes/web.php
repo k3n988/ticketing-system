@@ -34,10 +34,10 @@ Route::post('/admin/login', function (Request $request) {
     ])->withInput();
 })->name('admin.login.submit');
 
-// Logout
+// Logout → redirect to Create Ticket page
 Route::post('/admin/logout', function () {
     session()->forget('admin_logged_in');
-    return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
+    return redirect()->route('tickets.create')->with('success', 'Logged out successfully.');
 })->name('admin.logout');
 
 /*
@@ -56,35 +56,47 @@ Route::get('/admin/dashboard', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Protected Routes (Ticket CRUD)
+| Admin Ticket Actions
 |--------------------------------------------------------------------------
 */
 
-// Homepage → Ticket create form
+// Edit ticket form
+Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+
+// Update ticket (from form)
+Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
+
+// Delete ticket
+Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+
+// Mark as Paid
+Route::post('/tickets/{ticket}/paid', [TicketController::class, 'markPaid'])->name('tickets.markPaid');
+
+// Send Ticket via email
+Route::post('/tickets/{ticket}/send', [TicketController::class, 'sendEmail'])->name('tickets.sendEmail');
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes (Ticket Create & View)
+|--------------------------------------------------------------------------
+*/
+
+// Homepage → Ticket create form (public)
 Route::get('/', function () {
-    if (!session('admin_logged_in')) {
-        return redirect()->route('admin.login');
-    }
     return app(TicketController::class)->create();
 })->name('home');
 
-// Ticket create form
+// Ticket create form (public)
 Route::get('/tickets/create', function () {
-    if (!session('admin_logged_in')) {
-        return redirect()->route('admin.login');
-    }
     return app(TicketController::class)->create();
 })->name('tickets.create');
 
-// Store ticket
+// Store ticket (public)
 Route::post('/tickets', function (Request $request) {
-    if (!session('admin_logged_in')) {
-        return redirect()->route('admin.login');
-    }
     return app(TicketController::class)->store($request);
 })->name('tickets.store');
 
-// Download ticket PDF
+// Download ticket PDF (Admin only)
 Route::get('/tickets/{ticket}/download', function (Ticket $ticket) {
     if (!session('admin_logged_in')) {
         return redirect()->route('admin.login');
@@ -92,10 +104,7 @@ Route::get('/tickets/{ticket}/download', function (Ticket $ticket) {
     return app(TicketController::class)->downloadTicket($ticket);
 })->name('tickets.download');
 
-// Show ticket
+// Show ticket (public – view by user)
 Route::get('/tickets/{ticket}', function (Ticket $ticket) {
-    if (!session('admin_logged_in')) {
-        return redirect()->route('admin.login');
-    }
     return app(TicketController::class)->show($ticket);
 })->name('tickets.show');
