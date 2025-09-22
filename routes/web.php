@@ -7,16 +7,21 @@ use App\Models\Ticket;
 
 /*
 |--------------------------------------------------------------------------
+| Admin Credentials
+|--------------------------------------------------------------------------
+*/
+const ADMIN_EMAIL = "computerscience@gmail.com";
+const ADMIN_PASSWORD = "12345678";
+
+/*
+|--------------------------------------------------------------------------
 | Admin Login Routes
 |--------------------------------------------------------------------------
 */
 
-const ADMIN_EMAIL = "computerscience@gmail.com";
-const ADMIN_PASSWORD = "12345678";
-
 // Show login form
 Route::get('/admin/login', function () {
-    return view('tickets.admin.login'); 
+    return view('tickets.admin.login');
 })->name('admin.login');
 
 // Handle login
@@ -29,12 +34,10 @@ Route::post('/admin/login', function (Request $request) {
         return redirect()->route('admin.dashboard')->with('success', 'Welcome Admin!');
     }
 
-    return back()->withErrors([
-        'login' => 'Invalid email or password.'
-    ])->withInput();
+    return back()->withErrors(['login' => 'Invalid email or password.'])->withInput();
 })->name('admin.login.submit');
 
-// Logout → redirect to Create Ticket page
+// Logout
 Route::post('/admin/logout', function () {
     session()->forget('admin_logged_in');
     return redirect()->route('tickets.create')->with('success', 'Logged out successfully.');
@@ -45,11 +48,11 @@ Route::post('/admin/logout', function () {
 | Admin Dashboard
 |--------------------------------------------------------------------------
 */
-
 Route::get('/admin/dashboard', function () {
     if (!session('admin_logged_in')) {
         return redirect()->route('admin.login');
     }
+
     $tickets = Ticket::all();
     return view('tickets.admin.dashboard', compact('tickets'));
 })->name('admin.dashboard');
@@ -59,52 +62,27 @@ Route::get('/admin/dashboard', function () {
 | Admin Ticket Actions
 |--------------------------------------------------------------------------
 */
-
-// Edit ticket form
-Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
-
-// Update ticket (from form)
-Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
-
-// Delete ticket
-Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
-
-// Mark as Paid
-Route::post('/tickets/{ticket}/paid', [TicketController::class, 'markPaid'])->name('tickets.markPaid');
-
-// Send Ticket via email
-Route::post('/tickets/{ticket}/send', [TicketController::class, 'sendEmail'])->name('tickets.sendEmail');
+Route::middleware(['web'])->group(function () {
+    Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+    Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
+    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+    Route::post('/tickets/{ticket}/paid', [TicketController::class, 'markPaid'])->name('tickets.markPaid');
+    Route::post('/tickets/{ticket}/send', [TicketController::class, 'sendEmail'])->name('tickets.sendEmail');
+    Route::get('/tickets/{ticket}/download', [TicketController::class, 'downloadTicket'])
+        ->middleware(function ($request, $next) {
+            if (!session('admin_logged_in')) {
+                return redirect()->route('admin.login');
+            }
+            return $next($request);
+        })->name('tickets.download');
+});
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes (Ticket Create & View)
+| Public Routes
 |--------------------------------------------------------------------------
 */
-
-// Homepage → Ticket create form (public)
-Route::get('/', function () {
-    return app(TicketController::class)->create();
-})->name('home');
-
-// Ticket create form (public)
-Route::get('/tickets/create', function () {
-    return app(TicketController::class)->create();
-})->name('tickets.create');
-
-// Store ticket (public)
-Route::post('/tickets', function (Request $request) {
-    return app(TicketController::class)->store($request);
-})->name('tickets.store');
-
-// Download ticket PDF (Admin only)
-Route::get('/tickets/{ticket}/download', function (Ticket $ticket) {
-    if (!session('admin_logged_in')) {
-        return redirect()->route('admin.login');
-    }
-    return app(TicketController::class)->downloadTicket($ticket);
-})->name('tickets.download');
-
-// Show ticket (public – view by user)
-Route::get('/tickets/{ticket}', function (Ticket $ticket) {
-    return app(TicketController::class)->show($ticket);
-})->name('tickets.show');
+Route::get('/', [TicketController::class, 'create'])->name('home');
+Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
