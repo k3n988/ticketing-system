@@ -2,7 +2,7 @@
   "build": {
     "builder": "nixpacks",
     "args": {
-      "PHP_EXTENSIONS": "gd pdo_mysql"
+      "PHP_EXTENSIONS": "gd pdo_mysql mbstring bcmath fileinfo"
     }
   },
   "deploy": {
