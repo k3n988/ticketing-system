@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
@@ -70,4 +71,13 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
+=======
+  "require": {
+    "php": "^8.2",
+    "laravel/framework": "^12.0",
+    "laravel/tinker": "^2.8",
+    "simplesoftwareio/simple-qrcode": "^4.2",
+    "barryvdh/laravel-dompdf": "^3.1"
+  }
+>>>>>>> 9c70fc312a8546121429f0bfa9b1802ab335a8f0
 }

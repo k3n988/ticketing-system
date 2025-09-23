@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "2bb265884870916c1fea0907c0939388",
+=======
+    "content-hash": "1283f8633f1d5fa0ba9d2cec05b62031",
+>>>>>>> 9c70fc312a8546121429f0bfa9b1802ab335a8f0
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6635,6 +6639,7 @@
             "time": "2022-06-03T18:03:27+00:00"
         }
     ],
+<<<<<<< HEAD
     "packages-dev": [
         {
             "name": "fakerphp/faker",
@@ -8990,6 +8995,13 @@
     "minimum-stability": "stable",
     "stability-flags": {},
     "prefer-stable": true,
+=======
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+>>>>>>> 9c70fc312a8546121429f0bfa9b1802ab335a8f0
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
