@@ -2,7 +2,8 @@
   "build": {
     "builder": "nixpacks",
     "args": {
-      "PHP_EXTENSIONS": "gd pdo_pgsql mbstring bcmath fileinfo"
+      "PHP_EXTENSIONS": "gd pdo_pgsql mbstring bcmath fileinfo",
+      "PHP_OPTIONS": "max_execution_time=300 memory_limit=512M"
     }
   },
   "deploy": {
