@@ -2,11 +2,10 @@
   "build": {
     "builder": "nixpacks",
     "args": {
-      "PHP_EXTENSIONS": "gd pdo_mysql mbstring bcmath fileinfo"
+      "PHP_EXTENSIONS": "gd pdo_pgsql mbstring bcmath fileinfo"
     }
   },
   "deploy": {
     "startCommand": "php artisan serve --host=0.0.0.0 --port=$PORT"
   }
 }
-
