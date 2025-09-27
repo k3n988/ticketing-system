@@ -12,6 +12,19 @@ use App\Mail\TicketCreated;
 
 class TicketController extends Controller
 {
+    public function __construct()
+    {
+        // Protect these routes so only logged-in admins can access
+        $this->middleware(function ($request, $next) {
+            if (!session('admin_logged_in')) {
+                return redirect()->route('admin.login')->with('error', 'Please login first.');
+            }
+            return $next($request);
+        })->only([
+            'dashboard', 'update', 'destroy', 'markPaid', 'sendEmail', 'downloadTicket', 'show'
+        ]);
+    }
+
     /**
      * Show the ticket creation form.
      */
@@ -21,7 +34,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Store a new ticket without sending email.
+     * Store a new ticket (no email).
      */
     public function store(Request $request)
     {
@@ -44,9 +57,18 @@ class TicketController extends Controller
         $ticket = Ticket::create($validated);
 
         return redirect()
-            ->route('tickets.create')
+            ->route('home')
             ->with('success', 'Ticket successfully submitted!')
             ->with('last_ticket_id', $ticket->id);
+    }
+
+    /**
+     * Admin Dashboard: list all tickets.
+     */
+    public function dashboard()
+    {
+        $tickets = Ticket::all();
+        return view('tickets.admin.dashboard', compact('tickets'));
     }
 
     /**
@@ -58,13 +80,11 @@ class TicketController extends Controller
     }
 
     /**
-     * Download ticket as PDF with QR Code.
+     * Download ticket as PDF with QR code.
      */
     public function downloadTicket(Ticket $ticket)
     {
-        $qrCode = base64_encode(
-            QrCode::size(200)->generate('ORDER: ' . $ticket->order_number)
-        );
+        $qrCode = base64_encode(QrCode::size(200)->generate('ORDER: ' . $ticket->order_number));
 
         $pdf = Pdf::loadView('tickets.pdf', [
             'ticket'         => $ticket,
@@ -78,7 +98,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Update ticket info (Admin only) - works with inline row editing
+     * Update ticket info (Admin only).
      */
     public function update(Request $request, Ticket $ticket)
     {
@@ -86,17 +106,17 @@ class TicketController extends Controller
             'customer_name' => 'required|string|max:255',
             'email'         => 'required|email',
             'status'        => 'required|string|max:50',
-            'order_number'  => 'nullable|string|max:50', // <--- added for admin editing
+            'order_number'  => 'nullable|string|max:50',
         ]);
 
-        $ticket->update($validated); // now includes order_number
+        $ticket->update($validated);
 
         return redirect()->route('admin.dashboard')
             ->with('success', 'Ticket updated successfully!');
     }
 
     /**
-     * Delete ticket (Admin only)
+     * Delete ticket (Admin only).
      */
     public function destroy(Ticket $ticket)
     {
@@ -107,7 +127,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Mark ticket as Paid (Admin only)
+     * Mark ticket as Paid (Admin only).
      */
     public function markPaid(Ticket $ticket)
     {
@@ -119,11 +139,11 @@ class TicketController extends Controller
     }
 
     /**
-     * Send ticket via email manually (Admin only)
+     * Send ticket via email manually (Admin only).
      */
     public function sendEmail(Ticket $ticket)
     {
-        $qrCode = QrCode::size(200)->generate($ticket->order_number);
+        $qrCode = QrCode::size(200)->generate('ORDER: ' . $ticket->order_number);
 
         Mail::to($ticket->email)->send(new TicketCreated($ticket, $qrCode));
 
